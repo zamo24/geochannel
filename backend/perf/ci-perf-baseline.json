@@ -1,0 +1,23 @@
+{
+  "notes": "Corrected local pilot release gate approved on 2026-06-06 with concurrent ingest and clean stage transitions.",
+  "env": {
+    "LIMIT_MULTI_RUNS": "3",
+    "LIMIT_MULTI_RUN_OUTPUT_DIR": "/tmp/metrics-limits-ci-runs",
+    "LIMIT_MULTI_OUTPUT_FILE": "/tmp/metrics-limits-ci-summary.json",
+    "LIMIT_CHANNEL_TTL_SEC": "2400",
+    "LIMIT_STAGE_DURATION_SEC": "6",
+    "LIMIT_STAGE_WARMUP_SEC": "2",
+    "LIMIT_STAGE_DRAIN_MS": "300",
+    "LIMIT_MAX_STAGES": "28",
+    "LIMIT_INGEST_RATE_MAX": "5000",
+    "LIMIT_CLIENTS_MAX": "400",
+    "LIMIT_MAX_METRIC_P95_MS": "0",
+    "LIMIT_MAX_CLIENT_P95_MS": "1500",
+    "LIMIT_MAX_CLIENT_P99_MS": "0",
+    "LIMIT_MAX_DROP_RATE": "0.01",
+    "LIMIT_MULTI_MIN_WORST_STABLE_STAGE": "11",
+    "LIMIT_MULTI_MIN_WORST_STABLE_INGEST": "1600",
+    "LIMIT_MULTI_MIN_WORST_STABLE_CLIENTS": "110",
+    "LIMIT_MULTI_MAX_WORST_DROP_RATE": "0.02"
+  }
+}

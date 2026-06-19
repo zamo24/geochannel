@@ -1,0 +1,254 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        run: npm --prefix backend ci
+
+      - name: Test backend
+        run: npm --prefix backend run test:unit
+
+      - name: Build backend
+        run: npm --prefix backend run build
+
+      - name: Check backend structure
+        run: npm --prefix backend run check:structure
+
+      - name: Audit backend production dependencies
+        run: npm --prefix backend audit --omit=dev --audit-level=high
+
+      - name: Validate pilot configuration
+        working-directory: backend
+        env:
+          PILOT_MODE: "true"
+          INGEST_AUTH_REQUIRED: "true"
+          INGEST_API_KEYS: pilot:ingest-key
+          TENANT_AUTH_REQUIRED: "true"
+          TENANT_API_KEYS: pilot:tenant-key
+          STREAM_AUTH_REQUIRED: "true"
+          STREAM_TOKEN_SECRET: a-secure-stream-token-secret-value
+          TOKEN_MINT_RATE_LIMIT_PER_MIN: "60"
+          METRICS_AUTH_REQUIRED: "true"
+          METRICS_AUTH_TOKEN: a-secure-metrics-auth-token-value
+          CORS_ORIGINS: https://pilot.example.com
+          MAX_CHANNELS_PER_TENANT_ACTIVE: "20"
+          INGEST_RATE_LIMIT_EVENTS_PER_SEC: "500"
+          STREAM_RETENTION_MS: "900000"
+          MAX_STREAM_SUBSCRIBERS_PER_TENANT: "25"
+          MAX_STREAM_SUBSCRIBERS_PER_CHANNEL: "25"
+        run: npm run pilot:validate
+
+      - name: Validate pilot Compose configuration
+        env:
+          INGEST_API_KEYS: pilot:ingest-key
+          TENANT_API_KEYS: pilot:tenant-key
+          STREAM_TOKEN_SECRET: a-secure-stream-token-secret-value
+          METRICS_AUTH_TOKEN: a-secure-metrics-auth-token-value
+          CORS_ORIGINS: https://pilot.example.com
+        run: docker compose -f infra/docker-compose.pilot.yml config >/dev/null
+
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install web dependencies
+        run: npm --prefix web ci
+
+      - name: Test web
+        run: npm --prefix web run test:unit
+
+      - name: Build and enforce web bundle limits
+        run: npm --prefix web run build
+
+      - name: Check web structure
+        run: npm --prefix web run check:structure
+
+      - name: Audit web production dependencies
+        run: npm --prefix web audit --omit=dev --audit-level=high
+
+  packages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install workspace dependencies
+        run: npm ci
+
+      - name: Validate client package contents
+        working-directory: packages/client
+        run: npm pack --dry-run
+
+      - name: Validate contracts package contents
+        working-directory: packages/contracts
+        run: npm pack --dry-run
+
+  browser-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      INGEST_API_KEYS: pilot:ingest-key
+      TENANT_API_KEYS: pilot:tenant-key
+      STREAM_TOKEN_SECRET: a-secure-stream-token-secret-value
+      METRICS_AUTH_TOKEN: a-secure-metrics-auth-token-value
+      CORS_ORIGINS: http://127.0.0.1:5173
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: |
+            backend/package-lock.json
+            web/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          npm --prefix backend ci
+          npm --prefix web ci
+
+      - name: Install Chromium
+        run: npx --prefix web playwright install --with-deps chromium
+
+      - name: Start E2E pilot stack
+        run: docker compose -f infra/docker-compose.pilot.yml -f infra/docker-compose.e2e.yml up -d --build
+
+      - name: Wait for backend health
+        run: |
+          for _ in {1..60}; do
+            if curl -fsS http://localhost:8081/health/redis >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose -f infra/docker-compose.pilot.yml -f infra/docker-compose.e2e.yml logs
+          exit 1
+
+      - name: Run browser E2E
+        run: npm --prefix web run test:e2e
+
+      - name: Upload browser E2E artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: browser-e2e-artifacts
+          path: |
+            web/playwright-report/
+            web/test-results/
+          if-no-files-found: ignore
+
+      - name: Show service logs
+        if: failure()
+        run: docker compose -f infra/docker-compose.pilot.yml -f infra/docker-compose.e2e.yml logs
+
+      - name: Stop services
+        if: always()
+        run: docker compose -f infra/docker-compose.pilot.yml -f infra/docker-compose.e2e.yml down -v
+
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - mode: default
+            compose_file: infra/docker-compose.yml
+          - mode: pilot
+            compose_file: infra/docker-compose.pilot.yml
+    env:
+      INGEST_API_KEYS: pilot:ingest-key
+      TENANT_API_KEYS: pilot:tenant-key
+      STREAM_TOKEN_SECRET: a-secure-stream-token-secret-value
+      METRICS_AUTH_TOKEN: a-secure-metrics-auth-token-value
+      CORS_ORIGINS: https://pilot.example.com
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install smoke dependencies
+        run: npm --prefix backend ci
+
+      - name: Start ${{ matrix.mode }} stack
+        run: docker compose -f "${{ matrix.compose_file }}" up -d --build
+
+      - name: Wait for backend health
+        run: |
+          for _ in {1..60}; do
+            if curl -fsS http://localhost:8081/health/redis >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose -f "${{ matrix.compose_file }}" logs
+          exit 1
+
+      - name: Run ${{ matrix.mode }} smoke suite
+        run: |
+          if [ "${{ matrix.mode }}" = "pilot" ]; then
+            PILOT_TENANT_ID=pilot \
+            PILOT_INGEST_API_KEY=ingest-key \
+            PILOT_TENANT_API_KEY=tenant-key \
+            PILOT_METRICS_AUTH_TOKEN=a-secure-metrics-auth-token-value \
+            npm --prefix backend run pilot:rehearse
+          else
+            npm --prefix backend run test:smoke
+          fi
+
+      - name: Show service logs
+        if: failure()
+        run: docker compose -f "${{ matrix.compose_file }}" logs
+
+      - name: Stop services
+        if: always()
+        run: docker compose -f "${{ matrix.compose_file }}" down -v

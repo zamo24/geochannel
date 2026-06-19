@@ -1,0 +1,6 @@
+services:
+  backend:
+    environment:
+      STREAM_TOKEN_TTL_SEC: "2"
+      STREAM_TOKEN_TTL_MIN_SEC: "1"
+      STREAM_TOKEN_TTL_MAX_SEC: "60"

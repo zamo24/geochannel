@@ -1,0 +1,63 @@
+name: Backend Perf Gate
+
+on:
+  pull_request:
+    paths:
+      - "backend/**"
+      - "infra/**"
+      - ".github/workflows/backend-perf-gate.yml"
+  workflow_dispatch:
+
+jobs:
+  perf-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: |
+            backend/package-lock.json
+
+      - name: Install backend deps
+        run: npm --prefix backend ci
+
+      - name: Start services
+        run: docker compose -f infra/docker-compose.yml up -d --build
+
+      - name: Wait for backend health
+        run: |
+          for _ in {1..60}; do
+            if curl -fsS http://localhost:8081/health >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "backend health check failed"
+          exit 1
+
+      - name: Load perf baseline env
+        run: |
+          # shellcheck disable=SC2016
+          node -e 'const fs=require("fs"); const p=JSON.parse(fs.readFileSync("backend/perf/ci-perf-baseline.json","utf8")); for (const [k,v] of Object.entries(p.env)) { console.log(`${k}=${v}`); }' >> "$GITHUB_ENV"
+
+      - name: Run multi-run perf benchmark gate
+        run: npm --prefix backend run bench:limits:multi
+
+      - name: Upload perf artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-perf-artifacts
+          path: |
+            /tmp/metrics-limits-ci-summary.json
+            /tmp/metrics-limits-ci-runs/*.json
+
+      - name: Stop services
+        if: always()
+        run: docker compose -f infra/docker-compose.yml down

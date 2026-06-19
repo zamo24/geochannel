@@ -1,0 +1,34 @@
+{
+  "name": "@geochannel/client",
+  "version": "0.1.0",
+  "description": "JavaScript client helpers for GeoChannel spatial streams",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zamo24/geochannel.git",
+    "directory": "packages/client"
+  },
+  "bugs": {
+    "url": "https://github.com/zamo24/geochannel/issues"
+  },
+  "homepage": "https://github.com/zamo24/geochannel/tree/main/packages/client",
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "geochannel-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "gen": "tsx src/gen.ts",
+    "bench:load-compare": "node scripts/load-compare.mjs",
+    "bench:limits": "node scripts/metrics-limits.mjs",
+    "bench:limits:multi": "node scripts/metrics-limits-multi.mjs",
+    "pilot:validate": "tsx src/pilot-validate.ts",
+    "pilot:rehearse": "node scripts/pilot-rehearsal.mjs",
+    "build": "tsc -p tsconfig.json",
+    "start": "node --experimental-specifier-resolution=node dist/index.js",
+    "test:unit": "tsx --test src/**/*.test.ts",
+    "test:smoke": "node --test scripts/channel-smoke.test.mjs",
+    "check:structure": "node ../scripts/check-structure.mjs --target=backend"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.2.0",
+    "@geochannel/contracts": "file:../packages/contracts",
+    "fastify": "^5.8.5",
+    "h3-js": "^4.1.0",
+    "ioredis": "^5.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.19",
+    "tsx": "^4.7.0",
+    "typescript": "^5.6.3"
+  }
+}

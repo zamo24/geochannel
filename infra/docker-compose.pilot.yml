@@ -1,0 +1,74 @@
+services:
+  redis:
+    image: redis:7
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec", "--save", "60", "1000"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    environment:
+      PORT: "8081"
+      REDIS_URL: redis://redis:6379
+      PILOT_MODE: "true"
+      INGEST_AUTH_REQUIRED: "true"
+      INGEST_API_KEYS: "${INGEST_API_KEYS:?Set INGEST_API_KEYS}"
+      TENANT_AUTH_REQUIRED: "true"
+      TENANT_API_KEYS: "${TENANT_API_KEYS:?Set TENANT_API_KEYS}"
+      STREAM_AUTH_REQUIRED: "true"
+      STREAM_TOKEN_SECRET: "${STREAM_TOKEN_SECRET:?Set STREAM_TOKEN_SECRET}"
+      TOKEN_MINT_RATE_LIMIT_PER_MIN: "${TOKEN_MINT_RATE_LIMIT_PER_MIN:-60}"
+      METRICS_AUTH_REQUIRED: "true"
+      METRICS_AUTH_TOKEN: "${METRICS_AUTH_TOKEN:?Set METRICS_AUTH_TOKEN}"
+      CORS_ORIGINS: "${CORS_ORIGINS:?Set CORS_ORIGINS}"
+      MAX_CHANNELS_PER_TENANT_ACTIVE: "${MAX_CHANNELS_PER_TENANT_ACTIVE:-20}"
+      MAX_CHANNELS_PER_TENANT_HOUR: "${MAX_CHANNELS_PER_TENANT_HOUR:-100}"
+      MAX_TILES_PER_CHANNEL: "${MAX_TILES_PER_CHANNEL:-5000}"
+      MAX_CHANNEL_TILE_MATERIALIZATION: "${MAX_CHANNEL_TILE_MATERIALIZATION:-20000}"
+      INGEST_RATE_LIMIT_EVENTS_PER_SEC: "${INGEST_RATE_LIMIT_EVENTS_PER_SEC:-500}"
+      STREAM_RETENTION_MS: "${STREAM_RETENTION_MS:-900000}"
+      MAX_STREAM_SUBSCRIBERS_PER_TENANT: "${MAX_STREAM_SUBSCRIBERS_PER_TENANT:-25}"
+      MAX_STREAM_SUBSCRIBERS_PER_CHANNEL: "${MAX_STREAM_SUBSCRIBERS_PER_CHANNEL:-25}"
+    ports:
+      - "8081:8081"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:8081/health/redis').then(r=>{if(!r.ok)process.exit(1)})"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/prometheus"]
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus-alerts.yml:/etc/prometheus/prometheus-alerts.yml:ro
+      - prometheus-data:/prometheus
+    secrets:
+      - metrics_auth_token
+    ports:
+      - "9090:9090"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+  prometheus-data:
+
+secrets:
+  metrics_auth_token:
+    environment: METRICS_AUTH_TOKEN

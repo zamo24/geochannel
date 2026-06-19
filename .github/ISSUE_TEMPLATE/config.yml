@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Usage and design questions
+    url: https://github.com/zamo24/geochannel/discussions
+    about: Ask questions and discuss integration approaches.
+  - name: Security vulnerability
+    url: https://github.com/zamo24/geochannel/security/advisories/new
+    about: Report vulnerabilities privately.

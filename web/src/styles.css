@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 210 40% 98%;
+  --foreground: 224 71% 4%;
+  --card: 0 0% 100%;
+  --card-foreground: 224 71% 4%;
+  --primary: 212 100% 45%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 214 32% 91%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 214 32% 94%;
+  --muted-foreground: 215 16% 40%;
+  --border: 214 30% 85%;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  @apply bg-background text-foreground antialiased;
+  font-family:
+    "Sora",
+    "IBM Plex Sans",
+    "Segoe UI",
+    sans-serif;
+}
+
+.map {
+  height: 100%;
+}
+
+.hud {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(200, 208, 220, 0.8);
+}
+
+.hud .row {
+  margin: 2px 0;
+}
+
+.small {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: #f4f4f4;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toggle input {
+  margin: 0;
+}
+
+.num-input {
+  width: 42px;
+  padding: 1px 4px;
+  margin: 0 2px;
+}
+
+.num-input.wide {
+  width: 72px;
+}
+
+.hint {
+  margin-left: 6px;
+  font-size: 11px;
+  opacity: 0.7;
+}

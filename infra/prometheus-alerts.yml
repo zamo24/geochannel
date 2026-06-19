@@ -1,0 +1,66 @@
+groups:
+  - name: geochannel-pilot
+    rules:
+      - alert: GeoChannelMetricsTargetDown
+        expr: up{job="geochannel"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: GeoChannel metrics target is down
+          description: Prometheus cannot scrape a GeoChannel backend target.
+
+      - alert: GeoChannelHighStreamLatencyP95
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum by (le) (rate(geochannel_stream_frame_latency_ms_bucket[5m]))
+          ) > 1500
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: GeoChannel stream latency p95 is high
+          description: Stream frame p95 latency is above 1500 ms for 10 minutes.
+
+      - alert: GeoChannelBackpressureDropRateHigh
+        expr: |
+          sum(rate(geochannel_stream_frames_dropped_backpressure_total[5m]))
+            / clamp_min(sum(rate(geochannel_stream_frames_sent_total[5m])), 1) > 0.01
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: GeoChannel backpressure drop rate is high
+          description: Backpressure drops are above 1% of sent stream frames.
+
+      - alert: GeoChannelInvalidStreamDrops
+        expr: sum(rate(geochannel_stream_frames_dropped_invalid_total[5m])) > 0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: GeoChannel invalid stream drops detected
+          description: The backend is dropping invalid stream frames.
+
+      - alert: GeoChannelRejectedIngestEvents
+        expr: sum(rate(geochannel_ingest_events_rejected_total[5m])) > 0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: GeoChannel ingest events are being rejected
+          description: One or more tenants have rejected ingest events.
+
+      - alert: GeoChannelSubscriptionChurnHigh
+        expr: |
+          sum(rate(geochannel_stream_subscriptions_total[5m])) > 1
+            and
+          sum(rate(geochannel_stream_subscriptions_total[5m]))
+            / clamp_min(sum(geochannel_stream_subscribers_current), 1) > 0.2
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: GeoChannel stream subscription churn is high
+          description: Subscription rate is high relative to current subscribers.

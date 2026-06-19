@@ -1,0 +1,34 @@
+{
+  "name": "geochannel-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Open-source backend and JavaScript SDK for viewport-scoped geospatial streams",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "backend",
+    "web",
+    "packages/*",
+    "examples/token-broker"
+  ],
+  "scripts": {
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:web": "npm --prefix web run dev",
+    "build": "npm --prefix backend run build && npm --prefix web run build",
+    "test": "npm --prefix backend run test:unit && npm --prefix web run test:unit && npm --prefix examples/token-broker test",
+    "test:smoke": "npm --prefix backend run test:smoke",
+    "test:e2e": "npm --prefix web run test:e2e",
+    "check:structure": "npm --prefix backend run check:structure && npm --prefix web run check:structure",
+    "check": "npm test && npm run build && npm run check:structure"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zamo24/geochannel.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zamo24/geochannel/issues"
+  },
+  "homepage": "https://github.com/zamo24/geochannel#readme"
+}
