@@ -99,7 +99,8 @@ Metrics:
 - `METRICS_RESET_ENABLED`, `METRICS_RESET_TOKEN`
 
 Scrape `GET /metrics` from every backend instance. Tune the starter rules in
-[../infra/prometheus-alerts.yml](../infra/prometheus-alerts.yml) against your
+[infra/prometheus-alerts.yml](https://github.com/zamo24/geochannel/blob/main/infra/prometheus-alerts.yml)
+against your
 own traffic and infrastructure.
 
 ## Web Configuration
@@ -116,7 +117,8 @@ own traffic and infrastructure.
 
 Do not place ingest, tenant, or metrics credentials in a public browser build.
 Use a trusted backend such as the
-[token-broker example](../examples/token-broker/) for channel and token
+[token-broker example](https://github.com/zamo24/geochannel/tree/main/examples/token-broker)
+for channel and token
 creation.
 
 ## Externally Accessible Deployment

@@ -1,7 +1,8 @@
-# GeoChannel Documentation
+# Maintaining the GeoChannel Documentation
 
 ## Start Here
 
+- [index.md](index.md): documentation landing page and primary navigation
 - [API.md](API.md): endpoint contracts, authentication, payloads, and errors
 - [CUSTOMER_INTEGRATION_QUICKSTART.md](CUSTOMER_INTEGRATION_QUICKSTART.md):
   browser-safe ingest, channel, token, and stream integration
@@ -11,6 +12,7 @@
 - [SECURITY_DATA_HANDLING_FAQ.md](SECURITY_DATA_HANDLING_FAQ.md): current
   security and data-handling limitations
 - [MANAGED_SERVICE.md](MANAGED_SERVICE.md): managed design-partner deployments
+- [ROADMAP.md](ROADMAP.md): project priorities and explicit non-goals
 
 ## Operations
 

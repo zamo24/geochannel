@@ -1,7 +1,8 @@
 # GeoChannel Observability
 
 Use this guide to wire the backend into a monitoring stack and tune the
-starter alert rules in [../infra/prometheus-alerts.yml](../infra/prometheus-alerts.yml).
+starter alert rules in
+[infra/prometheus-alerts.yml](https://github.com/zamo24/geochannel/blob/main/infra/prometheus-alerts.yml).
 
 ## Metrics Endpoints
 
@@ -57,7 +58,9 @@ the dashboard needs finer latency visibility at low traffic volume.
 
 ## Starter Alerts
 
-Load [../infra/prometheus-alerts.yml](../infra/prometheus-alerts.yml) into the
+Load
+[infra/prometheus-alerts.yml](https://github.com/zamo24/geochannel/blob/main/infra/prometheus-alerts.yml)
+into the
 target Prometheus or compatible alerting system, then tune thresholds after the
 first representative `bench:limits:multi` and `bench:load-compare` runs.
 

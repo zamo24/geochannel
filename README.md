@@ -111,14 +111,31 @@ with the first tagged developer-preview release.
 
 ## Documentation
 
+- [Full documentation site](https://zamo24.github.io/geochannel/)
 - [API reference](docs/API.md)
 - [Customer integration quickstart](docs/CUSTOMER_INTEGRATION_QUICKSTART.md)
+- [Architecture](docs/ARCHITECTURE.md)
 - [Deployment guide](docs/DEPLOYMENT.md)
 - [Observability](docs/OBSERVABILITY.md)
 - [Security and data handling](docs/SECURITY_DATA_HANDLING_FAQ.md)
 - [Operations runbook](docs/RUNBOOK.md)
 - [Managed GeoChannel](docs/MANAGED_SERVICE.md)
-- [Public roadmap](ROADMAP.md)
+- [Public roadmap](docs/ROADMAP.md)
+
+Build and preview the documentation locally:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r docs/requirements.txt
+mkdocs serve
+```
+
+Before submitting documentation changes, run:
+
+```bash
+mkdocs build --strict
+```
 
 ## Project Status and Support
 

@@ -1,0 +1,64 @@
+site_name: GeoChannel
+site_description: Open-source backend and JavaScript SDK for viewport-scoped geospatial streams
+site_url: https://zamo24.github.io/geochannel/
+repo_url: https://github.com/zamo24/geochannel
+repo_name: zamo24/geochannel
+docs_dir: docs
+exclude_docs: |
+  requirements.txt
+
+theme:
+  name: material
+  palette:
+    primary: green
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.instant
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
+    - toc.integrate
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Quickstart: CUSTOMER_INTEGRATION_QUICKSTART.md
+      - API Reference: API.md
+  - Concepts:
+      - Architecture: ARCHITECTURE.md
+  - Operations:
+      - Deployment: DEPLOYMENT.md
+      - Observability: OBSERVABILITY.md
+      - Operations Runbook: RUNBOOK.md
+      - Security and Data Handling: SECURITY_DATA_HANDLING_FAQ.md
+      - Key Rotation: KEY_ROTATION.md
+      - Canary and Rollback: CANARY_ROLLBACK.md
+  - Managed Service:
+      - Managed GeoChannel: MANAGED_SERVICE.md
+  - Project:
+      - Roadmap: ROADMAP.md
+      - Pre-Release Checklist: PRE_RELEASE_CHECKLIST.md
+      - Release PR Checklist: RELEASE_PR_CHECKLIST.md
+      - Documentation Guide: MAINTAINING_DOCS.md

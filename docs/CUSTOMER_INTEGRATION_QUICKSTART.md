@@ -20,7 +20,8 @@ Authenticated browser
 ```
 
 Use the reference implementation in
-[`../examples/token-broker/`](../examples/token-broker/) to evaluate the
+[`examples/token-broker/`](https://github.com/zamo24/geochannel/tree/main/examples/token-broker)
+to evaluate the
 trusted channel and token flow. In production, mount that operation behind the
 customer application's existing authenticated user session.
 
