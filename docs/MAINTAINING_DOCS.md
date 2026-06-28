@@ -13,6 +13,7 @@
   security and data-handling limitations
 - [MANAGED_SERVICE.md](MANAGED_SERVICE.md): managed design-partner deployments
 - [ROADMAP.md](ROADMAP.md): project priorities and explicit non-goals
+- [VERSIONING.md](VERSIONING.md): release versions and compatibility policy
 
 ## Operations
 

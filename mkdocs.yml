@@ -32,7 +32,11 @@ markdown_extensions:
   - toc:
       permalink: true
   - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -59,6 +63,7 @@ nav:
       - Managed GeoChannel: MANAGED_SERVICE.md
   - Project:
       - Roadmap: ROADMAP.md
+      - Versioning and Compatibility: VERSIONING.md
       - Pre-Release Checklist: PRE_RELEASE_CHECKLIST.md
       - Release PR Checklist: RELEASE_PR_CHECKLIST.md
       - Documentation Guide: MAINTAINING_DOCS.md

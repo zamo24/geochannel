@@ -68,7 +68,7 @@ change viewports.
 | Design | [Architecture](ARCHITECTURE.md) |
 | Operations | [Deployment](DEPLOYMENT.md) · [Observability](OBSERVABILITY.md) · [Runbook](RUNBOOK.md) |
 | Security | [Security and data handling](SECURITY_DATA_HANDLING_FAQ.md) · [Key rotation](KEY_ROTATION.md) |
-| Releases | [Canary and rollback](CANARY_ROLLBACK.md) · [Pre-release checklist](PRE_RELEASE_CHECKLIST.md) |
+| Releases | [Versioning and compatibility](VERSIONING.md) · [Canary and rollback](CANARY_ROLLBACK.md) · [Pre-release checklist](PRE_RELEASE_CHECKLIST.md) |
 | Service options | [Managed GeoChannel](MANAGED_SERVICE.md) |
 | Project direction | [Roadmap](ROADMAP.md) |
 

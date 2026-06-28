@@ -17,6 +17,9 @@ streaming, contracts, deployment, or operational docs.
 
 ## API And Contracts
 
+- [ ] Release version follows [VERSIONING.md](VERSIONING.md)
+- [ ] Public package versions and lockfiles use the coordinated release version
+- [ ] Release notes describe user-facing changes and required migrations
 - [ ] [API.md](API.md) matches implemented endpoint behavior
 - [ ] Shared contracts in `packages/contracts/` are updated if frame or error shapes changed
 - [ ] Error codes for changed failure paths are documented

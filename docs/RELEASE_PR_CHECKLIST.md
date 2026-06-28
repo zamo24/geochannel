@@ -34,6 +34,8 @@ When performance-sensitive paths changed:
 
 ## Documentation
 
+- [ ] Version impact is classified using [VERSIONING.md](VERSIONING.md)
+- [ ] Release notes or migration guidance are included when required
 - [ ] [API.md](API.md) updated for endpoint, payload, error, or config changes
 - [ ] [DEPLOYMENT.md](DEPLOYMENT.md) updated for env/config changes
 - [ ] [RUNBOOK.md](RUNBOOK.md) updated for operational changes
